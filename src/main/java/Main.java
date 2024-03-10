@@ -1,8 +1,14 @@
+import java.util.Locale;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
+        // Локаль для ввода/вывода вещественных чисел c разделителем точкой
+        Locale LOCALE = Locale.ENGLISH;
+
         Scanner scanner = new Scanner(System.in);
+        scanner.useLocale(LOCALE);
+
         // Определение количества человек
         int personCount = getPersonCount(scanner);
 
@@ -14,11 +20,11 @@ public class Main {
         // Вывод данных
         System.out.println("Добавленные товары:");
         for (Product product : calculator.products) {
-            System.out.printf("%s: %.2f%n",product.name, product.price);
+            System.out.printf(LOCALE,"%s: %.2f%n",product.name, product.price);
         }
         System.out.println("-------------------");
-        System.out.printf("Общая сумма: %s%n%n", formatSum(calculator.productSum));
-        System.out.println("Каждый должен заплатить по " + formatSum(calculator.getSumPerPerson()));
+        System.out.printf("Общая сумма: %s%n", formatSum(LOCALE, calculator.productSum));
+        System.out.printf("Сумма на каждого: %s", formatSum(LOCALE, calculator.getSumPerPerson()));
     }
 
      static int getPersonCount(Scanner scanner){
@@ -64,13 +70,17 @@ public class Main {
         }
     }
 
-    static String formatSum(double value) {
-        String currency = switch ((int) value % 10) {
+    static String formatSum(Locale locale, double value) {
+        int valueRnd = (int) value;
+        String currency = switch (valueRnd % 10) {
             case 1 -> "рубль";
             case 2, 3, 4 -> "рубля";
             default -> "рублей";
         };
-        return String.format("%.2f %s",value,currency);
+        if (valueRnd % 100 > 10 && valueRnd % 100 < 20) {
+            currency = "рублей";
+        }
+        return String.format(locale,"%.2f %s",value,currency);
     }
 
 }
